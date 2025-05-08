@@ -291,7 +291,7 @@ pub mod tree {
                         return sparent.clone().borrow().left.clone();
                     }
                 }
-            }
+            } 
             None
         }
     }

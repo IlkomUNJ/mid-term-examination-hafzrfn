@@ -9,8 +9,6 @@ use crate::tool::generate_dotfile;
 use crate::tool::generate_dotfile_bst;
 
 fn main() {
-    //turn on to test the old code
-    // test_binary_tree();
     test_binary_search_tree();
 }
 
@@ -98,6 +96,44 @@ fn test_binary_search_tree(){
         9, 7, // other keys
         22 // non-existent key
     ];
+
+
+    // add node test
+    let search_keys = vec![5, 3, 17];
+
+    for &key in search_keys.iter() {
+        print!("nodes added: ", key);
+
+        if let Some(node_result) = rootlink.borrow().tree_search(&key) {
+            println!("node -> {:?}", node_result.borrow().key);
+        } else {
+            println!("no node added");
+        }
+    }
+
+    //predecessor test
+    let query_keys = vec![
+        4, // min_node
+        25, // max_node
+        15, // root_node
+        // test case for node with empty left child
+        13,
+        9, 7, // other keys
+        22 // non-existent key
+    ];
+
+    //median test
+    let min_node = rootlink.borrow().minimum();
+    println!("minimum result {:?}", min_node.borrow().key);
+    let max_node = rootlink.borrow().maximum();
+    println!("maximum result {:?}", max_node.borrow().key);
+    let max_node = rootlink.borrow().median();
+    println(BstNode::median(value));
+
+
+    //rebalance test
+    println(BstNode::tree_rebalance(node));
+    
 
     for &key in query_keys.iter() {
         if let Some(node) = rootlink.borrow().tree_search(&key) {

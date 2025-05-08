@@ -1,3 +1,5 @@
+// test push
+
 use std::cell::{Ref, RefCell};
 use std::rc::{Rc, Weak};
 
@@ -31,6 +33,7 @@ impl BstNode {
     }
 
     /**
+     * //test git push
      * Get a copy of node link
      */
     pub fn get_bst_nodelink_copy(&self) -> BstNodeLink {
@@ -264,6 +267,134 @@ impl BstNode {
         false
     }
 
+    // adding node with the ability to add new node under value_node
+    pub fn add_node(&self, target_node: &BstNodeLink, value: i32) -> bool{
+        pub fn tree_addnode(root: &Option<BstNodeLink>, value: i32) -> BstNodeLink {
+            // kalau tree is empty, create a new node
+            if root.is_none() {
+                return BstNode::new_bst_nodelink(value);
+            }
+        
+            let mut current_node = root.clone();
+        
+            // Traverse to the correct insertion point
+            while let Some(node) = current_node {
+                if value < node.borrow().key.unwrap() {
+                    if node.borrow().left.is_none() {
+                        node.borrow_mut().add_left_child(&node, value);
+                        return node.clone();
+                    } else {
+                        current_node = node.borrow().left.clone();
+                    }
+                } else {
+                    if node.borrow().right.is_none() {
+                        node.borrow_mut().add_right_child(&node, value);
+                        return node.clone();
+                    } else {
+                        current_node = node.borrow().right.clone();
+                    }
+                }
+            }
+            // After insertion, rebalance the tree
+            tree_rebalance(&root.unwrap())
+        }
+        
+    }
+
+    pub fn tree_predecessor(node &BstNodeLink) -> Option<BstNodeLink>{
+        pub fn tree_predecessor(x_node: &BstNodeLink) -> Option<BstNodeLink> {
+            // Case 1: If node has a left child, the predecessor is the maximum in the left subtree
+            if let Some(left_node) = &x_node.borrow().left {
+                return Some(left_node.borrow().maximum());
+            }
+        
+            // Case 2: No left child, walk up the tree to find the next lower node
+            let mut x_node = x_node;
+            let mut parent_node = BstNode::upgrade_weak_to_strong(x_node.borrow().parent.clone());
+        
+            while let Some(p_node) = parent_node {
+                if let Some(ref right_child) = p_node.borrow().right {
+                    if BstNode::is_node_match(right_child, x_node) {
+                        return Some(p_node.clone());
+                    }
+                }
+        
+                x_node = &p_node;
+                parent_node = BstNode::upgrade_weak_to_strong(p_node.borrow().parent.clone());
+            }
+        
+            None
+        }        
+    }
+
+    pub fn median(&self) -> BstNodeLink{
+            pub fn median(&self) -> BstNodeLink {
+                let mut nodes = Vec::new();
+                self.inorder_traversal(&self.root, &mut nodes);
+                // Return the median node (middle element)
+                nodes[nodes.len() / 2].clone()
+            }
+        
+            fn inorder_traversal(&self, node: &Option<BstNodeLink>, nodes: &mut Vec<BstNodeLink>) {
+                if let Some(ref n) = node {
+                    self.inorder_traversal(&n.left, nodes);
+                    nodes.push(n.clone());
+                    self.inorder_traversal(&n.right, nodes);
+                }
+        }
+    }
+
+    // tree rebalancing function without array:
+    pub fn tree_rebalance(node: &BstNodeLink) -> BstNodeLink{
+        impl BinarySearchTree {
+            pub fn tree_rebalance(&mut self, node: &BstNodeLink) -> Option<BstNodeLink> {
+                // First count the total number of nodes
+                let total_nodes = self.count_nodes(node);
+                
+                // for rebalance the tree using the node count
+                self.build_balanced_tree(node, 0, total_nodes - 1)
+            }
+        
+            fn count_nodes(&self, node: &Option<BstNodeLink>) -> usize {
+                if let Some(n) = node {
+                    1 + self.count_nodes(&n.left) + self.count_nodes(&n.right)
+                } else {
+                    0
+                }
+            }
+        
+            fn build_balanced_tree(
+                &self,
+                node: &Option<BstNodeLink>,
+                start: usize,
+                end: usize,
+            ) -> Option<BstNodeLink> {
+                if start > end {
+                    return None;
+                }
+                
+                let mid = (start + end) / 2;
+                
+                // building the left subtree
+                let left_subtree = self.build_balanced_tree(node, start, mid - 1);
+                
+                // building current node
+                let mut current_node = node.clone();
+                
+                // building the right subtree
+                let right_subtree = self.build_balanced_tree(node, mid + 1, end);
+        
+                let mut balanced_node = node.clone();
+                balanced_node.left = left;
+                balanced_node.right = right;
+
+                Some(balanced_node)
+            }
+        }
+        
+        
+    }
+
     /**
      * Alternate simpler version of tree_successor that made use of is_nil checking
      */
@@ -353,3 +484,4 @@ impl BstNode {
         }
     }
 }
+
